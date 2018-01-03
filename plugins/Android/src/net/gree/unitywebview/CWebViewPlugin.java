@@ -139,41 +139,46 @@ public class CWebViewPlugin {
                     canGoForward = webView.canGoForward();
                 }
 
-                @Override
-                public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-                    if (mCustomHeaders == null || mCustomHeaders.isEmpty()) {
-                        return super.shouldInterceptRequest(view, url);
-                    }
+                // @Override
+                // public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                //     if (mCustomHeaders == null || mCustomHeaders.isEmpty()) {
+                //         return super.shouldInterceptRequest(view, url);
+                //     }
 
-                    try {
-                        HttpURLConnection urlCon = (HttpURLConnection) (new URL(url)).openConnection();
-                        // The following should make HttpURLConnection have a same user-agent of webView)
-                        // cf. http://d.hatena.ne.jp/faw/20070903/1188796959 (in Japanese)
-                        urlCon.setRequestProperty("User-Agent", mWebViewUA);
+                //     try {
+                //         HttpURLConnection urlCon = (HttpURLConnection) (new URL(url)).openConnection();
+                //         // The following should make HttpURLConnection have a same user-agent of webView)
+                //         // cf. http://d.hatena.ne.jp/faw/20070903/1188796959 (in Japanese)
+                //         urlCon.setRequestProperty("User-Agent", mWebViewUA);
 
-                        for (HashMap.Entry<String, String> entry: mCustomHeaders.entrySet()) {
-                            urlCon.setRequestProperty(entry.getKey(), entry.getValue());
-                        }
+                //         for (HashMap.Entry<String, String> entry: mCustomHeaders.entrySet()) {
+                //             urlCon.setRequestProperty(entry.getKey(), entry.getValue());
+                //         }
 
-                        urlCon.connect();
+                //         urlCon.connect();
 
-                        return new WebResourceResponse(
-                            urlCon.getContentType().split(";", 2)[0],
-                            urlCon.getContentEncoding(),
-                            urlCon.getInputStream()
-                        );
+                //         return new WebResourceResponse(
+                //             urlCon.getContentType().split(";", 2)[0],
+                //             urlCon.getContentEncoding(),
+                //             urlCon.getInputStream()
+                //         );
 
-                    } catch (Exception e) {
-                        return super.shouldInterceptRequest(view, url);
-                    }
-                }
+                //     } catch (Exception e) {
+                //         return super.shouldInterceptRequest(view, url);
+                //     }
+                // }
 
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
                     canGoBack = webView.canGoBack();
                     canGoForward = webView.canGoForward();
-                    if (url.startsWith("http://") || url.startsWith("https://")
-                        || url.startsWith("file://") || url.startsWith("javascript:")) {
+                    if (url.startsWith("http://") || url.startsWith("https://"))
+                    {
+                        if (mCustomHeaders != null && !mCustomHeaders.isEmpty()) {
+                            view.loadUrl(url, mCustomHeaders);
+                        }
+                        return true;
+                    }else if (url.startsWith("file://") || url.startsWith("javascript:")) {
                         // Let webview handle the URL
                         return false;
                     } else if (url.startsWith("unity:")) {
