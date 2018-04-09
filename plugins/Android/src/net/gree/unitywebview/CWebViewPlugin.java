@@ -172,13 +172,16 @@ public class CWebViewPlugin {
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
                     canGoBack = webView.canGoBack();
                     canGoForward = webView.canGoForward();
-                    if (url.startsWith("http://") || url.startsWith("https://"))
-                    {
-                        if (mCustomHeaders != null && !mCustomHeaders.isEmpty()) {
-                            view.loadUrl(url, mCustomHeaders);
-                        }
-                        return true;
-                    }else if (url.startsWith("file://") || url.startsWith("javascript:")) {
+
+                    // if (url.startsWith("http://") || url.startsWith("https://"))
+                    // {
+                    //     if (mCustomHeaders != null && !mCustomHeaders.isEmpty()) {
+                    //         view.loadUrl(url, mCustomHeaders);
+                    //     }
+                    //     return true;
+                    // }else if (url.startsWith("file://") || url.startsWith("javascript:")) {
+                    if (url.startsWith("http://") || url.startsWith("https://")
+                    || url.startsWith("file://") || url.startsWith("javascript:")) {
                         // Let webview handle the URL
                         return false;
                     } else if (url.startsWith("unity:")) {
